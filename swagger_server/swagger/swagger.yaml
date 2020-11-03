@@ -1,0 +1,172 @@
+openapi: 3.0.0
+info:
+  title: Smart Joe API
+  description: This is the API for my personal assistant Server
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/patrickstecker/SmartJoeServer/1.0.0
+  description: SwaggerHub API Auto Mocking
+paths:
+  /uni/lectures/day/{offset}:
+    get:
+      summary: Get the Lectures of the Current(+offset) Day
+      description: |
+        This endpoint will return the luctures of the current day(+offset).
+      operationId: uni_get_day_lectures
+      parameters:
+      - name: offset
+        in: path
+        description: Day offset from current day
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      responses:
+        "200":
+          description: returns lectures of today(+offset)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Lecture'
+                x-content-type: application/json
+        "400":
+          description: bad input parameter
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /uni/lectures/week/{offset}:
+    get:
+      summary: Get the Lectures of the Current Week(+offset)
+      description: |
+        This endpoint will return the luctures of the current week.
+      operationId: uni_get_week_lectures
+      parameters:
+      - name: offset
+        in: path
+        description: Week offset from current day
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      responses:
+        "200":
+          description: returns lectures of current week(+offset)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Lecture'
+                x-content-type: application/json
+        "400":
+          description: bad input parameter
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /uni/lectures/daysAroundToday/{offset}/{range}:
+    get:
+      summary: Get Lecture-Days around today(+offset) in range of range
+      description: "This endpoint will return the current day of lectures and the\
+        \ days that\nare in range around today. This will be in an array of arrays\
+        \ like a \nWeek.\n"
+      operationId: uni_get_days_around_lectures
+      parameters:
+      - name: offset
+        in: path
+        description: day offset from current day
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      - name: range
+        in: path
+        description: The range of days returned
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      responses:
+        "200":
+          description: returns lectures of current week(+offset)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Lecture'
+                x-content-type: application/json
+        "400":
+          description: bad input parameter
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+components:
+  schemas:
+    Lecture:
+      required:
+      - date
+      - details
+      - isLecture
+      - name
+      - times
+      type: object
+      properties:
+        name:
+          type: string
+          example: Big Data
+        times:
+          $ref: '#/components/schemas/Times'
+        date:
+          type: string
+          example: 12.12.
+        details:
+          type: array
+          example: Raum 207B
+          items:
+            type: string
+        isLecture:
+          type: boolean
+          example: true
+      example:
+        date: 12.12.
+        isLecture: true
+        times:
+          endMin: 10
+          endHour: 11
+          beginHour: 13
+          beginMin: 12
+        name: Big Data
+        details: Raum 207B
+    Times:
+      required:
+      - beginHour
+      - beginMin
+      - endHour
+      - endMin
+      type: object
+      properties:
+        endMin:
+          type: number
+          example: 10
+        endHour:
+          type: number
+          example: 11
+        beginMin:
+          type: number
+          example: 12
+        beginHour:
+          type: number
+          example: 13
+      example:
+        endMin: 10
+        endHour: 11
+        beginHour: 13
+        beginMin: 12
+
